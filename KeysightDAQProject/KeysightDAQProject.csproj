@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Ivi.Visa">
+      <HintPath>C:\Program Files (x86)\IVI Foundation\VISA\Microsoft.NET\Framework32\v2.0.50727\VISA.NET Shared Components 7.2.0\Ivi.Visa.dll</HintPath>
+    </Reference>
+    <Reference Include="Ivi.Visa.Interop">
+      <HintPath>..\..\..\..\..\..\..\Program Files\IVI Foundation\VISA\VisaCom64\Primary Interop Assemblies\Ivi.Visa.Interop.dll</HintPath>
+    </Reference>
+    <Reference Include="Keysight.Visa">
+      <HintPath>C:\Program Files\Keysight\IO Libraries Suite\Keysight.Visa.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

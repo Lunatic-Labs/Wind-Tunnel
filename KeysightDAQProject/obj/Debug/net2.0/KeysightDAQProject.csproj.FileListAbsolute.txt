@@ -1,0 +1,6 @@
+C:\Users\hayden\Projects\Fall2024\SoftwareStudio\Wind-Tunnel\KeysightDAQProject\obj\Debug\net2.0\KeysightDAQProject.csproj.AssemblyReference.cache
+C:\Users\hayden\Projects\Fall2024\SoftwareStudio\Wind-Tunnel\KeysightDAQProject\obj\Debug\net2.0\KeysightDAQProject.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hayden\Projects\Fall2024\SoftwareStudio\Wind-Tunnel\KeysightDAQProject\obj\Debug\net2.0\KeysightDAQProject.AssemblyInfoInputs.cache
+C:\Users\hayden\Projects\Fall2024\SoftwareStudio\Wind-Tunnel\KeysightDAQProject\obj\Debug\net2.0\KeysightDAQProject.AssemblyInfo.cs
+C:\Users\hayden\Projects\Fall2024\SoftwareStudio\Wind-Tunnel\KeysightDAQProject\obj\Debug\net2.0\KeysightDAQProject.csproj.CoreCompileInputs.cache
+C:\Users\hayden\Projects\Fall2024\SoftwareStudio\Wind-Tunnel\KeysightDAQProject\obj\Debug\net2.0\KeysightDAQProject.sourcelink.json
