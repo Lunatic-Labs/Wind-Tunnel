@@ -1,4 +1,4 @@
-# WindViz LU: Wind Tunnel Data Visualization for Lipscomb University
+# WindViz LU: Wind Tunnel Data Visualization for Lipscomb University's RBJCOE Wind Tunnel
 
 ## Description
 
