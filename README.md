@@ -34,10 +34,19 @@ For detailed usage instructions, please refer to the [User Manual](docs/user_man
 ## Requirements
 
 - C#  --> get correct version we are using
-- Keysight IO Suite
-- NI MAX
+- Keysight IO Suite [https://www.keysight.com/us/en/lib/software-detail/computer-software/io-libraries-suite-downloads-2175637.html]
+  *Install both U1 Prerequisite and U1 Main
+- Keysight DAQ970A IVI Driver [https://www.keysight.com/us/en/lib/software-detail/driver/daq970-data-acquisition-system-ivi-driver-2991469.html]
+- NI-DAQmx [https://www.ni.com/en/support/downloads/drivers/download.ni-daq-mx.html?srsltid=AfmBOooZ1fdxoZsqOQ3cC7eyIW3MlledO-A0nCV8Z0OKyCk-5e4Ps3Db#547031]
 
-  NOTE: *add steps to disable file sharing and to turn the usb thing off in the Keysight DAQ
+## Setting up Keysight DAQ970A
+
+There are a few setting that will potentially need to be modified to ensure the Keysight DAQ970A can be 
+connected via USB.
+
+- File Sharing Off
+- USB Mode
+- something else?
 
 
 ## Contributing
