@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KeysightDAQProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a49928cd96ac59792be5ed8edbd22b199f330e29")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9ff347d828292cd94dab80d84aeb24806381a0ea")]
 [assembly: System.Reflection.AssemblyProductAttribute("KeysightDAQProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KeysightDAQProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
