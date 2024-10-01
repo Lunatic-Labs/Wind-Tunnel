@@ -23,21 +23,24 @@ cd WindVizLU
 
 To run WindViz LU:
 
-TODO: ensure the .csproj file is correct and try to setup new environment with it. denote those steps below
+TODO: ensure the .csproj file is correct and try to setup new environment with it. Denote those steps below
 
 ```bash
-
+dotnet run
 ```
 
 For detailed usage instructions, please refer to the [User Manual](docs/user_manual.md).
 
 ## Requirements
 
-- C#  --> get correct version we are using
-- Keysight IO Suite [https://www.keysight.com/us/en/lib/software-detail/computer-software/io-libraries-suite-downloads-2175637.html]
+- C#
+  - .NET Core 2.0: [Download .NET Core 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041)
+  - .NET Core 8.0: [Download .NET Core 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- Keysight IO Suite: [Download Keysight IO Suite](https://www.keysight.com/us/en/lib/software-detail/computer-software/io-libraries-suite-downloads-2175637.html)
   *Install both U1 Prerequisite and U1 Main
-- Keysight DAQ970A IVI Driver [https://www.keysight.com/us/en/lib/software-detail/driver/daq970-data-acquisition-system-ivi-driver-2991469.html]
-- NI-DAQmx [https://www.ni.com/en/support/downloads/drivers/download.ni-daq-mx.html?srsltid=AfmBOooZ1fdxoZsqOQ3cC7eyIW3MlledO-A0nCV8Z0OKyCk-5e4Ps3Db#547031]
+- Keysight DAQ970A IVI Driver: [Download DAQ970A IVI Driver](https://www.keysight.com/us/en/lib/software-detail/driver/daq970-data-acquisition-system-ivi-driver-2991469.html)
+- NI VISA: [Download NI VISA](https://www.ni.com/en/support/downloads/drivers/download.ni-visa.html?srsltid=AfmBOopWpHz2JSCe2sas8uBwxCpSWRfKR7p00LZsIhFgAtvyExIZo_Uy#544206)
+- AvaloniaUI: [Download AvaloniaUI](https://avaloniaui.net/gettingstarted#installation)
 
 ## Setting up Keysight DAQ970A
 
@@ -48,17 +51,8 @@ connected via USB.
 - USB Mode
 - something else?
 
-
-## Contributing
-
-Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on how to submit pull requests, report issues, or request features.
-
-
 ## Contributors
 - Sam Wright samuel.wright@lipscomb.edu, Product Owner
 - Mekeal Brown mtbrown@mail.lipscomb.edu
 - Hayden Dewey hcdewey@mail.lipscomb.edu
 - Maxwell Williams mwilliams4@mail.lipscomb.edu
-
-
-## Project Status
