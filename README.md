@@ -52,7 +52,7 @@ connected via USB.
 - something else?
 
 ## Contributors
-- Sam Wright samuel.wright@lipscomb.edu, Product Owner
+- Sam Wright samuel.wright@lipscomb.edu
 - Mekeal Brown mtbrown@mail.lipscomb.edu
 - Hayden Dewey hcdewey@mail.lipscomb.edu
 - Maxwell Williams mwilliams4@mail.lipscomb.edu
