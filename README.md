@@ -48,8 +48,20 @@ There are a few setting that will potentially need to be modified to ensure the 
 connected via USB.
 
 - File Sharing Off
-- USB Mode
-- something else?
+  1. Press Home key on the instrument
+  2. Press the User Settings softkey
+  3. Press the I/O softkey
+  4. Press More 1 of 2
+  5. Press USB settings
+  6. Toggle File Access to Off
+
+- USB Settings
+  1. Press the Home key on the instrument
+  2. Press the User Settings softkey
+  3. Press the I/O softkey
+  4. Press More 1 of 2
+  5. Press USB settings
+  6. Ensure that USB SCPI is on
 
 ## Contributors
 - Sam Wright samuel.wright@lipscomb.edu
