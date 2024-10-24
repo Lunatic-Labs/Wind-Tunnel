@@ -1,0 +1,21 @@
+﻿<Window x:Class="WPFTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFTest"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="Start_Recording_Button" Content="Start Recording" Click="Start_Recording_Button_Click" HorizontalAlignment="Left" Margin="10,0,0,10" VerticalAlignment="Bottom" Height="29" Width="258" Foreground="#FFEDEDED" BorderBrush="#FF901C1C">
+            <Button.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Red" Offset="0"/>
+                    <GradientStop Color="#FF9C0909" Offset="1"/>
+                </LinearGradientBrush>
+            </Button.Background>
+        </Button>
+        <ProgressBar x:Name="ProgressBar" HorizontalAlignment="Left" Height="29" Margin="273,0,0,10" VerticalAlignment="Bottom" Width="517"/>
+
+    </Grid>
+</Window>
