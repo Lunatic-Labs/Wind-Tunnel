@@ -39,8 +39,10 @@ namespace WPFTest
         {
             Debug.WriteLine("Recording...");
             progressBar.Value = 0;
+            DAQInterface daq = new DAQInterface();
             progress = new Progress<int>(value => { progressBar.Value = value; });
-            Task recording = Task.Run(() => DAQInterface.Record(progress));
+            Task.Run(() => daq.Record(progress));
+            Debug.WriteLine($"exiting button click");
         }
     }
 }

@@ -1,75 +1,112 @@
 ﻿using Ivi.Visa.Interop;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
 public class DAQInterface
 {
+    FormattedIO488 connection;
+
 	public DAQInterface()
 	{
-	}
-
-    public static async void Record(IProgress<int> progress)
-    {
         ResourceManager manager = new ResourceManager();
         string[] devices = manager.FindRsrc("USB?*INSTR");
         if (devices.Length > 0)
         {
-            Console.WriteLine(devices[0] + " was found!");
+            Debug.WriteLine(devices[0] + " was found!");
         }
-        FormattedIO488 connection = new FormattedIO488();
+        connection = new FormattedIO488();
         try
         {
             connection.IO = (IMessage)manager.Open(devices[0], AccessMode.NO_LOCK, 0, "");
             connection.IO.Clear();
             connection.WriteString("*IDN?", true);
             string result1 = connection.ReadString();
-            Console.WriteLine(result1);
-            //connection.WriteString("SYSTem:BEEPer:STATe Off", true);
-            //connection.WriteString("SYSTem:BEEPer:STATe?", true);
-            //string doesClick = connection.ReadString();
-            //Console.WriteLine(doesClick);
-            //connection.IO.Clear();
-            //connection.WriteString("MEAS:VOLT:DC? 1mV,0.00001,(@305)", true);
-            //string result2 = connection.ReadString();
-            //Console.WriteLine(result2);
+            Debug.WriteLine(result1);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex.Message}");
+        }
+    }
+
+    ~DAQInterface()
+    {
+        if (connection.IO != null)
+            connection.IO.Close();
+    }
+
+    //void ConfigureChannel()
+    //{
+    //    try
+    //    {
+    //        connection.WriteString()
+    //    }
+    //}
+
+    string Read()
+    {
+        try
+        {
+            connection.WriteString($"READ?");
+            return connection.ReadString();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"ERROR: {ex}");
+            return "ERROR";
+        }
+    }
+
+    public async void Record(IProgress<int> progress)
+    {
+        try
+        {
             connection.IO.Clear();
             connection.WriteString("CONF:VOLT:DC 1mV,0.00001,(@301)", true);
+            connection.WriteString("CONF:VOLT:DC 10V,0.001,(@305)", true);
+            connection.WriteString("CONF? (@301,305)", true);
+            Debug.WriteLine($"{connection.ReadString()}");
+            connection.WriteString("ROUT:SCAN (@301,305)");
             connection.WriteString("FORM:READ:TIME ON", true);
             connection.WriteString("FORM:READ:TIME:TYPE ABS", true);
             Console.WriteLine("CONF:VOLT:DC");
             var measureTask = () =>
             {
-                //connection.WriteString($"READ?");
-                //string result3 = connection.ReadString();
-                //Console.WriteLine($"{result3}");
+                connection.WriteString($"READ?");
+                string result3 = connection.ReadString();
+                Console.WriteLine($"{result3}");
                 //await Task.Delay(10);
-                return "1.234,10,24,2024,16,00,5"; // result3;
+                return result3;
             };
 
             List<string> resultList = new List<string>();
-            //resultList.Append("1.234,10,24,2024,16,00,5");
-            await Task.Run(() =>
+            await Task.Run(async () =>
             {
                 for (int i = 0; i < 100; i++)
                 {
-                    resultList.Add(measureTask());
+                    Task<string> measure = Task.Run(measureTask);
+                    CancellationToken cancellationToken = new CancellationToken();
+                    await measure.WaitAsync(cancellationToken);
+                    resultList.Add(measure.Result);
+                    Debug.WriteLine($"{measure.Result}");
                     progress.Report(i + 1);
                 }
                 FileStream fs = File.Create(System.IO.Path.Combine(Environment.CurrentDirectory, "test.csv"));
+                Debug.Write("Creating CSV output... ");
                 foreach (var result in resultList)
                 {
                     fs.Write(Encoding.UTF8.GetBytes(JoinTimestamp(result)));
                 }
+                Debug.Write("Done!\nClosing file... ");
                 fs.Close();
-
+                Debug.WriteLine("Done!");
             });
-
-            //connection.IO.Close();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"ERROR: {ex.Message}");
+            Debug.WriteLine($"ERROR: {ex.Message}");
         }
     }
 
