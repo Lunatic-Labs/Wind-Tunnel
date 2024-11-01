@@ -17,7 +17,7 @@ WindViz LU provides researchers and students with intuitive, real-time visualiza
 
 - Python 3.13.0
 - Keysight DAQ970A device
-- Windows, Linux, or macOS operating system
+- Windows 10 or higher
 
 ## Installation
 
@@ -29,9 +29,8 @@ cd Wind-Tunnel
 
 2. Choose your setup method:
 
-### Automatic Setup (Recommended/Windows Only)
+### Automatic Setup (Recommended)
 
-**Windows:**
 ```bash
 bash setup.sh
 ```
@@ -45,14 +44,8 @@ python -m venv myvenv
 
 2. Activate the virtual environment:
 
-**Windows:**
 ```bash
 myvenv\Scripts\activate
-```
-
-**Linux/macOS:**
-```bash
-source myvenv/bin/activate
 ```
 
 3. Install required packages:
