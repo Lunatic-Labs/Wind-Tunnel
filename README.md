@@ -1,70 +1,100 @@
-# WindViz LU: Wind Tunnel Data Visualization for Lipscomb University's RBJCOE Wind Tunnel
+# WindViz LU: Wind Tunnel Data Visualization
 
-## Description
+A real-time visualization tool for Lipscomb University's RBJCOE Wind Tunnel data analysis.
 
-WindViz LU is a powerful data visualization tool designed specifically for analyzing wind tunnel data. This software provides researchers and students with intuitive, real-time visualizations of aerodynamic data, enhancing the understanding and analysis of wind tunnel experiments.
+## Overview
+
+WindViz LU provides researchers and students with intuitive, real-time visualizations of aerodynamic data from wind tunnel experiments. This software streamlines the data collection and analysis process, making it easier to interpret and understand experimental results.
 
 ## Features
 
-- Real-time data visualization
-- Data export capabilities
-- User-friendly interface designed for researchers and students
+- Real-time data visualization and monitoring
+- Comprehensive data export capabilities
+- User-friendly interface optimized for academic research
+- Direct integration with Keysight DAQ970A hardware
+
+## Prerequisites
+
+- Python 3.13.0
+- Keysight DAQ970A device
+- Windows 10 or higher
 
 ## Installation
 
-TODO: get this process streamlined and fully correct
-
+1. Clone the repository:
 ```bash
 git clone https://github.com/Lunatic-Labs/Wind-Tunnel.git
-cd WindVizLU
+cd Wind-Tunnel
+```
+
+2. Choose your setup method:
+
+### Automatic Setup (Recommended)
+
+```bash
+bash setup.sh
+```
+
+### Manual Setup
+
+1. Create a virtual environment:
+```bash
+python -m venv myvenv
+```
+
+2. Activate the virtual environment:
+
+```bash
+myvenv\Scripts\activate
+```
+
+3. Install required packages:
+```bash
+pip install -r requirements.txt
 ```
 
 ## Usage
 
-To run WindViz LU:
-
-TODO: ensure the .csproj file is correct and try to setup new environment with it. Denote those steps below
-
+Launch the application:
 ```bash
-dotnet run
+python combined.py
+```
+Exit the virtual environment:
+```bash
+deactivate
 ```
 
-For detailed usage instructions, please refer to the [User Manual](docs/user_manual.md).
+## Hardware Configuration
 
-## Requirements
+### Keysight DAQ970A Setup
 
-- C#
-  - .NET Core 2.0: [Download .NET Core 2.0](https://www.microsoft.com/en-us/download/details.aspx?id=6041)
-  - .NET Core 8.0: [Download .NET Core 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- Keysight IO Suite: [Download Keysight IO Suite](https://www.keysight.com/us/en/lib/software-detail/computer-software/io-libraries-suite-downloads-2175637.html)
-  *Install both U1 Prerequisite and U1 Main
-- Keysight DAQ970A IVI Driver: [Download DAQ970A IVI Driver](https://www.keysight.com/us/en/lib/software-detail/driver/daq970-data-acquisition-system-ivi-driver-2991469.html)
-- NI VISA: [Download NI VISA](https://www.ni.com/en/support/downloads/drivers/download.ni-visa.html?srsltid=AfmBOopWpHz2JSCe2sas8uBwxCpSWRfKR7p00LZsIhFgAtvyExIZo_Uy#544206)
-- AvaloniaUI: [Download AvaloniaUI](https://avaloniaui.net/gettingstarted#installation)
+Configure the following settings to enable USB connectivity:
 
-## Setting up Keysight DAQ970A
+#### Disable File Sharing
+1. Press the Home key
+2. Select User Settings
+3. Select I/O
+4. Select More 1 of 2
+5. Select USB settings
+6. Set File Access to Off
 
-There are a few setting that will potentially need to be modified to ensure the Keysight DAQ970A can be 
-connected via USB.
+#### Enable USB SCPI
+1. Press the Home key
+2. Select User Settings
+3. Select I/O
+4. Select More 1 of 2
+5. Select USB settings
+6. Verify USB SCPI is enabled
 
-- File Sharing Off
-  1. Press Home key on the instrument
-  2. Press the User Settings softkey
-  3. Press the I/O softkey
-  4. Press More 1 of 2
-  5. Press USB settings
-  6. Toggle File Access to Off
+## Contributing
 
-- USB Settings
-  1. Press the Home key on the instrument
-  2. Press the User Settings softkey
-  3. Press the I/O softkey
-  4. Press More 1 of 2
-  5. Press USB settings
-  6. Ensure that USB SCPI is on
+We welcome contributions! Please contact our development team:
 
-## Contributors
-- Sam Wright samuel.wright@lipscomb.edu
-- Mekeal Brown mtbrown@mail.lipscomb.edu
-- Hayden Dewey hcdewey@mail.lipscomb.edu
-- Maxwell Williams mwilliams4@mail.lipscomb.edu
+- Sam Wright - [samuel.wright@lipscomb.edu](mailto:samuel.wright@lipscomb.edu)
+- Mekeal Brown - [mtbrown@mail.lipscomb.edu](mailto:mtbrown@mail.lipscomb.edu)
+- Hayden Dewey - [hcdewey@mail.lipscomb.edu](mailto:hcdewey@mail.lipscomb.edu)
+- Maxwell Williams - [mwilliams4@mail.lipscomb.edu](mailto:mwilliams4@mail.lipscomb.edu)
+
+## License
+
+[Add your license information here]
