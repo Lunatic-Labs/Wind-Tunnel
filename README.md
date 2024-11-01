@@ -29,16 +29,10 @@ cd Wind-Tunnel
 
 2. Choose your setup method:
 
-### Automatic Setup (Recommended)
+### Automatic Setup (Recommended/Windows Only)
 
 **Windows:**
 ```bash
-bash setup.sh
-```
-
-**Linux/macOS:**
-```bash
-chmod +x setup.sh
 bash setup.sh
 ```
 
