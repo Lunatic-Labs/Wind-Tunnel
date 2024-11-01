@@ -12,7 +12,6 @@ WindViz LU provides researchers and students with intuitive, real-time visualiza
 - Comprehensive data export capabilities
 - User-friendly interface optimized for academic research
 - Direct integration with Keysight DAQ970A hardware
-- Custom analysis tools for aerodynamic experiments
 
 ## Prerequisites
 
