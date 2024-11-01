@@ -66,6 +66,10 @@ Launch the application:
 ```bash
 python combined.py
 ```
+Exit the virtual environment:
+```bash
+deactivate
+```
 
 ## Hardware Configuration
 
