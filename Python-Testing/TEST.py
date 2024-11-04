@@ -151,7 +151,7 @@ class DAQ970AApp(QMainWindow):
         devices = self.rm.list_resources('USB?*INSTR')
         
         if devices:
-            self.connection = self.rm.open_resource(devices[0])
+            self.connection = self.rm.open_resource(devices[2])
             self.connection.clear()
             self.connection.write('*IDN?')
             idn = self.connection.read()
@@ -200,7 +200,7 @@ class DAQ970AApp(QMainWindow):
                     writer.writerow([elapsed_time] + current_measurement.flatten().tolist())
 
                 # Calculate calibrated forces
-                calibrated_force = self.calibrate_forces_(current_measurement)
+                calibrated_force = self.calibrate_forces(current_measurement)
                 self.calibrated_forces.append(calibrated_force)
 
                 # Update display labels
