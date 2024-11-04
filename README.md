@@ -18,6 +18,7 @@ WindViz LU provides researchers and students with intuitive, real-time visualiza
 - Python 3.13.0
 - Keysight DAQ970A device
 - Windows 10 or higher
+- Microsoft Visual C++ 14.0 or higher
 
 ## Installation
 
