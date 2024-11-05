@@ -151,7 +151,7 @@ class DAQ970AApp(QMainWindow):
         devices = self.rm.list_resources('USB?*INSTR')
         
         if devices:
-            self.connection = self.rm.open_resource(devices[2])
+            self.connection = self.rm.open_resource(devices[0])
             self.connection.clear()
             self.connection.write('*IDN?')
             idn = self.connection.read()
@@ -160,6 +160,7 @@ class DAQ970AApp(QMainWindow):
             # Configure the instrument for all three channels
             self.connection.write('SYSTem:BEEPer:STATe Off')
             self.connection.write('CONF:VOLT:DC 1mV,0.00001,(@301,302,303)')
+            self.connection.write('ROUT:SCAN (@301,302,303)')
         else:
             print("No USB instruments found")
 
@@ -183,9 +184,14 @@ class DAQ970AApp(QMainWindow):
                 current_measurement = np.zeros((3, 1))
                 
                 # Read all three channels
-                for i, channel in enumerate([301, 302, 303]):
-                    self.connection.write(f'MEAS:VOLT:DC? (@{channel})')
-                    current_measurement[i, 0] = float(self.connection.read())
+                # for i, channel in enumerate([301, 302, 303]):
+                #     self.connection.write(f'MEAS:VOLT:DC? (@{channel})')
+                #     current_measurement[i, 0] = float(self.connection.read())
+
+                self.connection.write('READ?')
+                result = self.connection.read()
+                for i, value in enumerate(result.split(',')):
+                    current_measurement[i, 0] = float(value)
 
                 # Store raw measurement matrix
                 self.measurements.append(current_measurement)
