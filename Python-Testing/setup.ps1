@@ -84,7 +84,7 @@ function Main {
     Write-ColoredMessage "`nSetup completed successfully!" "Green"
     Write-ColoredMessage "`nTo use WindViz LU:" "Yellow"
     Write-ColoredMessage "1. Make sure you're in the virtual environment (look for '(WindViz)' in your terminal)" "Yellow"
-    Write-ColoredMessage "2. Run 'python combined.py' to start the application" "Yellow"
+    Write-ColoredMessage "2. Run 'python TEST.py' to start the application" "Yellow"
     Write-ColoredMessage "`nIf you close your terminal, reactivate the virtual environment with:" "Yellow"
     Write-ColoredMessage "    .\WindViz\Scripts\Activate.ps1" "Yellow"
 }

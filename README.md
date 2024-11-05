@@ -31,9 +31,10 @@ cd Wind-Tunnel
 2. Choose your setup method:
 
 ### Automatic Setup (Recommended)
+*Note: Execution policy needs to be set to 'remotesigned' if not done already
 
 ```bash
-bash setup.sh
+.\setup.ps1
 ```
 
 ### Manual Setup
