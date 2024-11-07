@@ -209,6 +209,9 @@ class DAQ970AApp(QMainWindow):
                 calibrated_force = self.calibrate_forces(current_measurement)
                 self.calibrated_forces.append(calibrated_force)
 
+                self.timestamps = self.timestamps[-50:]
+                self.calibrated_forces = self.calibrated_forces[-50:]
+
                 # Update display labels
                 raw_matrix_str = (f"[{current_measurement[0,0]:.6f}]\n"
                                 f"[{current_measurement[1,0]:.6f}]\n"
@@ -223,10 +226,11 @@ class DAQ970AApp(QMainWindow):
                 # Update plot with calibrated forces
                 if self.calibrated_forces:
                     force_array = np.array(self.calibrated_forces)
+                    timestamps = self.timestamps
                     
                     # Update each line in the plot
                     for i, line in enumerate(self.lines):
-                        line.set_data(self.timestamps, force_array[:, i, 0])
+                        line.set_data(timestamps, force_array[:, i, 0])
 
                     # Adjust plot limits
                     self.ax.relim()
