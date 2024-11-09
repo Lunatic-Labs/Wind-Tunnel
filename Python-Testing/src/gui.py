@@ -5,11 +5,21 @@ from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
+import time
 
 class DAQ970AGui(QMainWindow):
-    def __init__(self):
+    def __init__(self, App):
         super().__init__()
         self.initUI()
+        self.app = App
+
+        self.measurement_timer = QTimer()
+        self.measurement_timer.timeout.connect(self.app.measure_task)
+        
+        self.measurements = []
+        self.calibrated_forces = []
+        self.timestamps = []
+        self.start_time = None
         
     def initUI(self):
         self.setWindowTitle("DAQ970A Matrix Data Display with Calibration")
@@ -47,11 +57,51 @@ class DAQ970AGui(QMainWindow):
 
         # Save button
         self.save_button = QPushButton("Save Channels")
+        self.save_button.clicked.connect(self.saved_channels)
         form_layout.addRow(self.save_button)
 
         layout.addLayout(form_layout)
         config_tab.setLayout(layout)
         return config_tab
+    
+    def saved_channels(self):
+        """Save the selected channels after validating input."""
+        try:
+            # Get values from the input fields
+            channel1 = int(self.channel1_input.text())
+            channel2 = int(self.channel2_input.text())
+            channel3 = int(self.channel3_input.text())
+
+            # Validate that channels are within the acceptable range and not the same
+            if not (301 <= channel1 <= 320 and 301 <= channel2 <= 320 and 301 <= channel3 <= 320):
+                self.show_error_message("Invalid channels", "Each channel must be between 301 and 320.")
+                return
+
+            if len({channel1, channel2, channel3}) != 3:
+                self.show_error_message("Duplicate channels", "Channels must be unique.")
+                return
+
+            # If valid, update the selected channels
+            self.selected_channels = [channel1, channel2, channel3]
+            message = f"Selected channels: {self.selected_channels}" 
+            print(message)
+            QMessageBox.information(self, 'Success', message)
+
+        except ValueError:
+            self.show_error_message("Invalid input", "Please enter valid channel numbers (301-320).")
+
+    def start_measuring(self):
+        """Start the measurement process."""
+        self.measurements = []
+        self.calibrated_forces = []
+        self.timestamps = []
+        self.start_time = time.time()
+        self.measurement_timer.start(10)  # Measure every 10ms
+
+    def stop_measuring(self):
+        """Stop the measurement process."""
+        self.measurement_timer.stop()
+        self.raw_data_label.setText("Measuring stopped.")
 
     def create_data_display_tab(self):
         """Create data display tab with plot and controls."""
@@ -63,6 +113,8 @@ class DAQ970AGui(QMainWindow):
         self.stop_button = QPushButton("Stop Measuring")
         layout.addWidget(self.start_button)
         layout.addWidget(self.stop_button)
+        self.start_button.clicked.connect(self.start_measuring)
+        self.stop_button.clicked.connect(self.stop_measuring)
 
         # Data labels
         self.raw_data_label = QLabel("Raw Voltages (V):\nNo data yet")

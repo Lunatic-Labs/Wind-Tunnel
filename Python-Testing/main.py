@@ -11,35 +11,13 @@ from src.instrument_manager import InstrumentManager
 
 class DAQ970AApp:
     def __init__(self):
-        self.gui = DAQ970AGui()
+        self.gui = DAQ970AGui(self)
         self.instrument = InstrumentManager()
         self.calibration = CalibrationManager()
         self.data_logger = DataLogger()
         
-        self.measurement_timer = QTimer()
-        self.measurement_timer.timeout.connect(self.measure_task)
-        
-        self.measurements = []
-        self.calibrated_forces = []
-        self.timestamps = []
-        self.start_time = None
-        
         # Connect to instrument
         self.instrument.connect()
-
-    def start_measuring(self):
-        """Start the measurement process."""
-        self.measurements = []
-        self.calibrated_forces = []
-        self.timestamps = []
-        self.start_time = time.time()
-        self.measurement_timer.start(10)  # Measure every 10ms
-
-    def stop_measuring(self):
-        """Stop the measurement process."""
-        self.measurement_timer.stop()
-        self.gui.raw_data_label.setText("Measuring stopped.")
-        print(f"Raw data logged to: {self.data_logger.csv_filename}")
 
     def measure_task(self):
         """Perform a single measurement cycle."""
@@ -48,25 +26,24 @@ class DAQ970AApp:
             return
 
         current_measurement = np.array(raw_data).reshape((3, 1))
-        elapsed_time = time.time() - self.start_time
+        elapsed_time = time.time() - self.gui.start_time
         
         # Store and log data
-        self.measurements.append(current_measurement)
-        self.timestamps.append(elapsed_time)
+        self.gui.measurements.append(current_measurement)
+        self.gui.timestamps.append(elapsed_time)
         self.data_logger.log_measurement(elapsed_time, current_measurement)
         
         # Calculate calibrated forces
         calibrated_force = self.calibration.calibrate_forces(current_measurement)
-        self.calibrated_forces.append(calibrated_force)
+        self.gui.calibrated_forces.append(calibrated_force)
         
         # Update GUI
         self.gui.update_display(raw_data, calibrated_force)
-        self.gui.update_plot(self.timestamps, self.calibrated_forces)
+        self.gui.update_plot(self.gui.timestamps, self.gui.calibrated_forces)
 
     def run(self):
         """Start the application."""
         self.gui.show()
-        self.start_measuring()
 
 def main():
     app = QApplication(sys.argv)
