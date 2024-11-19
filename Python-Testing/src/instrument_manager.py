@@ -12,14 +12,19 @@ class InstrumentManager:
         devices = self.rm.list_resources('USB?*INSTR')
         
         if devices:
-            self.connection = self.rm.open_resource(devices[0])  # Select the third device
-            self.connection.clear()
-            self.connection.write('*IDN?')
-            idn = self.connection.read()
-            print(f"Connected to: {idn}")
-            
-            self._configure_instrument()
-            return True
+            n = 0
+            while True:
+                try:
+                    self.connection = self.rm.open_resource(devices[n])
+                    self.connection.clear()
+                    self.connection.write('*IDN?')
+                    idn = self.connection.read()
+                    print(f"Connected to: {idn}")
+
+                    self._configure_instrument()
+                    return True
+                except pyvisa.errors.VisaIOError:
+                    n += 1
         else:
             print("No USB instruments found")
             return False

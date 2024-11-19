@@ -22,7 +22,7 @@ class DAQ970AGui(QMainWindow):
         self.start_time = None
         
     def initUI(self):
-        self.setWindowTitle("DAQ970A Matrix Data Display with Calibration")
+        self.setWindowTitle("WindViz")
         self.setGeometry(100, 100, 1000, 800)
 
         # Create tab widget
