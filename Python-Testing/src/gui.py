@@ -163,10 +163,13 @@ class DAQ970AGui(QMainWindow):
         """Update the plot with new data."""
         if not calibrated_forces:
             return
+        
+        latestTimestamps = timestamps[-50:]
+        latestForces = np.array(calibrated_forces[-50:])
 
-        force_array = np.array(calibrated_forces)
+        force_array = np.array(latestForces)
         for i, line in enumerate(self.lines):
-            line.set_data(timestamps, force_array[:, i, 0])
+            line.set_data(latestTimestamps, force_array[:, i, 0])
 
         self.ax.relim()
         self.ax.autoscale_view()
