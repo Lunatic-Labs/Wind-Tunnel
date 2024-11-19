@@ -1,4 +1,5 @@
 import pyvisa
+import datetime
 
 class InstrumentManager:
     def __init__(self):
@@ -30,6 +31,12 @@ class InstrumentManager:
 
     def _configure_instrument(self):
         """Configure the DAQ970A settings."""
+
+        # get timestamp included in DAQ970A readings
+        self.connection.write('FORM:READ:TIME:TYPE ABS')
+        self.connection.write('FORM:READ:TIME ON')
+
+        # configure selected channels to read them all at once
         channel_str = ','.join([f"@{ch}" for ch in self.selected_channels])
         self.connection.write(f'CONF:VOLT:DC 1mV,0.00001,({channel_str})')
         self.connection.write(f'ROUT:SCAN ({channel_str})')
@@ -48,7 +55,26 @@ class InstrumentManager:
         try:
             self.connection.write('READ?')
             result = self.connection.read()
-            return [float(value) for value in result.split(',')]
+            # print(result)
+            splitResult = result.split(',')
+
+            timestamps = []
+            for index in range(3):
+                secondSplit = splitResult[(index * 7) + 6].split('.')
+                timestamps.append(
+                    datetime.datetime(
+                        int(splitResult[(index * 7) + 1]), 
+                        int(splitResult[(index * 7) + 2]), 
+                        int(splitResult[(index * 7) + 3]), 
+                        int(splitResult[(index * 7) + 4]), 
+                        int(splitResult[(index * 7) + 5]), 
+                        int(secondSplit[0]), 
+                        int(secondSplit[1]) * 1000
+                        ).timestamp()
+                )
+            # print(timestamps)
+
+            return [[float(value) for value in [splitResult[0], splitResult[7], splitResult[14]]], timestamps]
         except Exception as ex:
             print(f"Error reading measurements: {ex}")
             return None
