@@ -19,6 +19,9 @@ WindViz LU provides researchers and students with intuitive, real-time visualiza
 - Keysight DAQ970A device
 - Windows 10 or higher
 - Microsoft Visual C++ 14.0 or higher
+- NI-VISA
+- Keysight IO Libraries (Main and Prerequisites)
+- DAQ970A USB driver
 
 ## Installation
 
