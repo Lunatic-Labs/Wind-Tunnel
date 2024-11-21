@@ -62,7 +62,7 @@ pip install -r requirements.txt
 
 Launch the application:
 ```bash
-python combined.py
+python main.py
 ```
 Exit the virtual environment:
 ```bash
