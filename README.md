@@ -91,9 +91,7 @@ Configure the following settings to enable USB connectivity:
 5. Select USB settings
 6. Verify USB SCPI is enabled
 
-## Contributing
-
-We welcome contributions! Please contact our development team:
+## Responsible Parties
 
 - Sam Wright - [samuel.wright@lipscomb.edu](mailto:samuel.wright@lipscomb.edu)
 - Mekeal Brown - [mtbrown@mail.lipscomb.edu](mailto:mtbrown@mail.lipscomb.edu)
