@@ -99,7 +99,3 @@ We welcome contributions! Please contact our development team:
 - Mekeal Brown - [mtbrown@mail.lipscomb.edu](mailto:mtbrown@mail.lipscomb.edu)
 - Hayden Dewey - [hcdewey@mail.lipscomb.edu](mailto:hcdewey@mail.lipscomb.edu)
 - Maxwell Williams - [mwilliams4@mail.lipscomb.edu](mailto:mwilliams4@mail.lipscomb.edu)
-
-## License
-
-[Add your license information here]
