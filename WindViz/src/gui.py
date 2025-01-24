@@ -34,35 +34,46 @@ class DAQ970AGui(QMainWindow):
 
     def create_configuration_tab(self):
         """Create configuration tab with settings controls."""
-        config_tab = QWidget()
         layout = QVBoxLayout()
-        form_layout = QFormLayout()
+        #form_layout = QFormLayout()
+        config_tab = QWidget()
 
-        # Configuration selector
-        self.config_selector = QComboBox()
-        self.config_selector.addItems(['Normal', 'Side'])
-        form_layout.addRow("Select Configuration:", self.config_selector)
+        self.open_config_button = QPushButton("Configure Test")
+        self.open_config_button.clicked.connect(self.open_config_dialog)
 
-        # Channel inputs
-        self.channel1_input = QLineEdit()
-        self.channel2_input = QLineEdit()
-        self.channel3_input = QLineEdit()
-        self.channel1_input.setPlaceholderText("Channel 1 (301-320)")
-        self.channel2_input.setPlaceholderText("Channel 2 (301-320)")
-        self.channel3_input.setPlaceholderText("Channel 3 (301-320)")
-
-        form_layout.addRow("Enter Channel 1:", self.channel1_input)
-        form_layout.addRow("Enter Channel 2:", self.channel2_input)
-        form_layout.addRow("Enter Channel 3:", self.channel3_input)
-
-        # Save button
-        self.save_button = QPushButton("Save Channels")
-        self.save_button.clicked.connect(self.saved_channels)
-        form_layout.addRow(self.save_button)
-
-        layout.addLayout(form_layout)
+        layout.addWidget(self.open_config_button)
         config_tab.setLayout(layout)
+        
+#
+        ## Configuration selector
+        #self.config_selector = QComboBox()
+        #self.config_selector.addItems(['Normal', 'Side'])
+        #form_layout.addRow("Select Configuration:", self.config_selector)
+#
+        ## Channel inputs
+        #self.channel1_input = QLineEdit()
+        #self.channel2_input = QLineEdit()
+        #self.channel3_input = QLineEdit()
+        #self.channel1_input.setPlaceholderText("Channel 1 (301-320)")
+        #self.channel2_input.setPlaceholderText("Channel 2 (301-320)")
+        #self.channel3_input.setPlaceholderText("Channel 3 (301-320)")
+#
+        #form_layout.addRow("Enter Channel 1:", self.channel1_input)
+        #form_layout.addRow("Enter Channel 2:", self.channel2_input)
+        #form_layout.addRow("Enter Channel 3:", self.channel3_input)
+#
+        ## Save button
+        #self.save_button = QPushButton("Save Channels")
+        #self.save_button.clicked.connect(self.saved_channels)
+        #form_layout.addRow(self.save_button)
+#
+        #layout.addLayout(form_layout)
+        #config_tab.setLayout(layout)
         return config_tab
+    
+    def open_config_dialog(self):
+        dialog = self.app.config
+        dialog.exec_()
     
     def saved_channels(self):
         """Save the selected channels after validating input."""

@@ -8,9 +8,11 @@ from src.gui import DAQ970AGui
 from src.data_logger import DataLogger
 from src.calibration import CalibrationManager
 from src.instrument_manager import InstrumentManager
+from src.configure_test import ConfigGeneratorDialog
 
 class DAQ970AApp:
     def __init__(self):
+        self.config = ConfigGeneratorDialog()
         self.gui = DAQ970AGui(self)
         self.instrument = InstrumentManager()
         self.calibration = CalibrationManager()
