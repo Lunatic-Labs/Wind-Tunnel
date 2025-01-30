@@ -27,49 +27,10 @@ class DAQ970AGui(QMainWindow):
 
         # Create tab widget
         self.tabs = QTabWidget()
-        self.tabs.addTab(self.create_configuration_tab(), "Configuration")
         self.tabs.addTab(self.create_data_display_tab(), "Data Display")
         
         self.setCentralWidget(self.tabs)
 
-    def create_configuration_tab(self):
-        """Create configuration tab with settings controls."""
-        layout = QVBoxLayout()
-        #form_layout = QFormLayout()
-        config_tab = QWidget()
-
-        self.open_config_button = QPushButton("Configure Test")
-        self.open_config_button.clicked.connect(self.open_config_dialog)
-
-        layout.addWidget(self.open_config_button)
-        config_tab.setLayout(layout)
-        
-#
-        ## Configuration selector
-        #self.config_selector = QComboBox()
-        #self.config_selector.addItems(['Normal', 'Side'])
-        #form_layout.addRow("Select Configuration:", self.config_selector)
-#
-        ## Channel inputs
-        #self.channel1_input = QLineEdit()
-        #self.channel2_input = QLineEdit()
-        #self.channel3_input = QLineEdit()
-        #self.channel1_input.setPlaceholderText("Channel 1 (301-320)")
-        #self.channel2_input.setPlaceholderText("Channel 2 (301-320)")
-        #self.channel3_input.setPlaceholderText("Channel 3 (301-320)")
-#
-        #form_layout.addRow("Enter Channel 1:", self.channel1_input)
-        #form_layout.addRow("Enter Channel 2:", self.channel2_input)
-        #form_layout.addRow("Enter Channel 3:", self.channel3_input)
-#
-        ## Save button
-        #self.save_button = QPushButton("Save Channels")
-        #self.save_button.clicked.connect(self.saved_channels)
-        #form_layout.addRow(self.save_button)
-#
-        #layout.addLayout(form_layout)
-        #config_tab.setLayout(layout)
-        return config_tab
     
     def open_config_dialog(self):
         dialog = self.app.config
@@ -118,6 +79,13 @@ class DAQ970AGui(QMainWindow):
         """Create data display tab with plot and controls."""
         data_tab = QWidget()
         layout = QVBoxLayout()
+
+        '''Configure test hardware data buttons'''
+        self.open_config_button = QPushButton("Configure Test")
+        layout.addWidget(self.open_config_button)
+        # Event listeners
+        self.open_config_button.clicked.connect(self.open_config_dialog)
+
 
         # Control buttons
         self.start_button = QPushButton("Start Measuring")
