@@ -12,7 +12,8 @@ class DAQ970AGui(QMainWindow):
         super().__init__()
         self.initUI()
         self.app = App
-
+        self.db = App.db
+        
         self.measurement_timer = QTimer()
         self.measurement_timer.timeout.connect(self.app.measure_task)
         
@@ -35,6 +36,11 @@ class DAQ970AGui(QMainWindow):
     def open_config_dialog(self):
         dialog = self.app.config
         dialog.exec_()
+        
+    def load_config_from_json(self):
+        #open json, read data
+        #set db values based on read data
+        return 0
     
     def saved_channels(self):
         """Save the selected channels after validating input."""

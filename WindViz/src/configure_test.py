@@ -1,126 +1,148 @@
-import sys
-import json
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QCheckBox, QPushButton, QComboBox, QFormLayout, QGroupBox, QScrollArea, QSpacerItem, QSizePolicy, QDialog
+import sys, json
+from PyQt5.QtWidgets import (
+    QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
+    QComboBox, QFormLayout, QGroupBox, QScrollArea, QPushButton, 
+    QSpacerItem, QSizePolicy, QWidget  # Ensure QWidget is imported
+)
 
-class ConfigGeneratorDialog(QDialog):
-    def __init__(self):
+class ChannelDialog(QDialog):
+    def __init__(self, App):
         super().__init__()
 
-        self.setWindowTitle('DAQ970 Configuration Generator')
-        self.setGeometry(100, 100, 500, 600)
+        self.setWindowTitle("Channel Configuration")
+        self.setGeometry(100, 100, 500, 500)
 
-        # Main layout
-        main_layout = QVBoxLayout()
+        # Initialize input fields for each section
+        self.pressure_input_fields = []
+        self.velocity_input_fields = []
+        self.temperature_input_fields = []
+        self.sting_input_fields = []
 
-        # Create a scroll area
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
+        self.layout = QVBoxLayout()
 
-        # Create a container widget for the scroll area
-        container_widget = QWidget()
-        container_layout = QVBoxLayout()
+        # Create scrollable area
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area_widget = QWidget()  # This needs QWidget to work
+        self.scroll_area.setWidget(self.scroll_area_widget)
+        self.scroll_layout = QVBoxLayout(self.scroll_area_widget)
 
-        # Measurement types
-        self.velocity_group = self.create_measurement_group("Velocity", 4)
-        self.pressure_group = self.create_measurement_group("Pressure", 9)
-        self.temperature_group = self.create_measurement_group("Temperature", 1)
-        self.sting_group = self.create_measurement_group("STING", 3)
+        # Create sections (Pressure, Velocity, Temperature, STING)
+        self.pressure_group = self.create_group_box("Pressure Channels", 9, self.pressure_input_fields)
+        self.velocity_group = self.create_group_box("Velocity Channels", 4, self.velocity_input_fields)
+        self.temperature_group = self.create_group_box("Temperature Channel", 1, self.temperature_input_fields, single=True)
+        self.sting_group = self.create_group_box("STING Channels", 3, self.sting_input_fields)
 
-        # Add all groups to the container layout
-        container_layout.addWidget(self.velocity_group)
-        container_layout.addWidget(self.pressure_group)
-        container_layout.addWidget(self.temperature_group)
-        container_layout.addWidget(self.sting_group)
+        # Add STING Configuration dropdown
+        self.sting_config_combo = QComboBox()
+        self.sting_config_combo.addItems(["Side", "Normal"])
+        self.sting_group.layout().addWidget(QLabel("STING Configuration"))
+        self.sting_group.layout().addWidget(self.sting_config_combo)
 
-        # Add a spacer item to push the save button to the bottom
-        container_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        # Add group boxes to scroll layout
+        self.scroll_layout.addWidget(self.pressure_group)
+        self.scroll_layout.addWidget(self.velocity_group)
+        self.scroll_layout.addWidget(self.temperature_group)
+        self.scroll_layout.addWidget(self.sting_group)
 
-        # Add the save button at the bottom
-        self.save_button = QPushButton("Save Configuration")
-        self.save_button.clicked.connect(self.save_configuration)
-        container_layout.addWidget(self.save_button)
+        # Submit Button
+        self.submit_button = QPushButton("Submit")
+        self.submit_button.clicked.connect(self.submit)
+        self.layout.addWidget(self.submit_button)
 
-        # Set the container layout
-        container_widget.setLayout(container_layout)
+        # Set main layout
+        self.layout.addWidget(self.scroll_area)
+        self.setLayout(self.layout)
 
-        # Set the container widget as the scroll area's widget
-        scroll_area.setWidget(container_widget)
+    def create_group_box(self, title, max_channels, field_list, single=False):
+        """Creates a group box for each section (Pressure, Velocity, etc.)"""
+        group_box = QGroupBox(title)
+        group_layout = QVBoxLayout()
 
-        # Add the scroll area to the main layout
-        main_layout.addWidget(scroll_area)
+        if not single:
+            # Create a drop-down for number of channels
+            combo_box = QComboBox()
+            combo_box.addItems([str(i) for i in range(1, max_channels + 1)])
+            combo_box.currentIndexChanged.connect(self.update_input_fields)
+            group_layout.addWidget(combo_box)
+            group_layout.addSpacing(10)  # Space between dropdown and fields, looks really bad without
 
-        # Set the layout for the main window
-        self.setLayout(main_layout)
+        self.create_input_fields(group_layout, 1, field_list)  # Temporary, to clear inputs
+        group_box.setLayout(group_layout)
 
-    def create_measurement_group(self, name, max_channels):
-        group_box = QGroupBox(f"{name} Configuration")
-        form_layout = QFormLayout()
-
-        # Dropdown to select the number of channels
-        num_channels_label = QLabel(f"Select number of {name} channels:")
-        num_channels_combo = QComboBox()
-        num_channels_combo.addItems([str(i) for i in range(1, max_channels + 1)])
-        num_channels_combo.currentIndexChanged.connect(lambda: self.update_channels(form_layout, name, int(num_channels_combo.currentText()), max_channels))
-
-        form_layout.addRow(num_channels_label, num_channels_combo)
-
-        group_box.setLayout(form_layout)
         return group_box
 
-    def update_channels(self, form_layout, name, num_channels, max_channels):
-        # Clear existing channels input fields
-        for i in reversed(range(form_layout.rowCount())):
-            widget = form_layout.itemAt(i).widget()
-            if widget:
-                widget.deleteLater()
+    def create_input_fields(self, layout, num_channels, field_list):
+        """Dynamically create input fields based on the selected number of channels."""
+        for i in range(num_channels):
+            input_field = QLineEdit()
+            input_field.setPlaceholderText(f"Channel {i + 1}")
+            layout.addWidget(input_field)
+            field_list.append(input_field)
 
-        # Add the dynamic channel inputs
-        for i in range(1, num_channels + 1):
-            channel_name = QLineEdit(f"{name} Channel {i}")
-            unit = "m/s" if name == "Velocity" else "Pa" if name == "Pressure" else "C" if name == "Temperature" else "N"
-            unit_label = QLabel(unit)
-            enabled_checkbox = QCheckBox("Enabled")
-            enabled_checkbox.setChecked(True)
-
-            form_layout.addRow(f"{name} Channel {i}:", channel_name)
-            form_layout.addRow(f"Unit ({name}):", unit_label)
-            form_layout.addRow("Enabled", enabled_checkbox)
-
-            channel_data = {
-                'name': channel_name,
-                'unit': unit,
-                'enabled': enabled_checkbox
-            }
-
-            # Save the channel data into the widget for later access
-            channel_name.setProperty("channel_data", channel_data)
-
-    def save_configuration(self):
-        config = {}
-
-        # Collect data from each measurement group
-        config['velocity'] = self.collect_data_from_group(self.velocity_group)
-        config['pressure'] = self.collect_data_from_group(self.pressure_group)
-        config['temperature'] = self.collect_data_from_group(self.temperature_group)
-        config['sting'] = self.collect_data_from_group(self.sting_group)
-
-        # Write to a JSON file
-        with open("daq970_config.json", "w") as f:
-            json.dump(config, f, indent=4)
+    def update_input_fields(self):
+        """Update the input fields based on the dropdown selection."""
+        # Clear existing input fields before adding new ones
+        self.clear_input_fields(self.pressure_input_fields)
+        self.clear_input_fields(self.velocity_input_fields)
+        self.clear_input_fields(self.sting_input_fields)
         
-        print("Configuration saved to daq970_config.json")
-        self.accept()  # Close the dialog after saving
+        # Get the number of channels selected
+        pressure_channels = int(self.pressure_group.findChild(QComboBox).currentText())
+        velocity_channels = int(self.velocity_group.findChild(QComboBox).currentText())
+        sting_channels = int(self.sting_group.findChild(QComboBox).currentText())
 
-    def collect_data_from_group(self, group_box):
-        channels = []
-        for child in group_box.findChildren(QLineEdit):
-            channel_data = child.property("channel_data")
-            channels.append({
-                'id': len(channels) + 1,
-                'name': channel_data['name'].text(),
-                'unit': channel_data['unit'],
-                'enabled': channel_data['enabled'].isChecked()
-            })
-        return {'channels': channels}
+        # Create new input fields based on the selected values
+        self.create_input_fields(self.pressure_group.layout(), pressure_channels, self.pressure_input_fields)
+        self.create_input_fields(self.velocity_group.layout(), velocity_channels, self.velocity_input_fields)
+        self.create_input_fields(self.sting_group.layout(), sting_channels, self.sting_input_fields)
+
+    def clear_input_fields(self, field_list):
+        """Clear the input fields list and remove the input fields from the layout."""
+        for field in field_list:
+            field.deleteLater()  # Remove the field from the layout
+        field_list.clear()  # Clear the list of field references
 
 
+    def submit(self):
+        """Handle the submit action and save data to a JSON file."""
+        pressure_channels = [field.text() for field in self.pressure_input_fields]
+        velocity_channels = [field.text() for field in self.velocity_input_fields]
+        sting_channels = [field.text() for field in self.sting_input_fields]
+        sting_config = self.sting_config_combo.currentText()
+    
+        config_data = {
+            "velocity": {
+                "channels": [{"id": i + 1, "name": f"Velocity Channel {i + 1}"} for i in range(len(velocity_channels))]
+            },
+            "pressure": {
+                "channels": [{"id": i + 1, "name": f"Pressure Channel {i + 1}"} for i in range(len(pressure_channels))]
+            },
+            "temperature": {
+                "channels": [{"id": 1, "name": "Temperature Channel 1"}]  # Always 1 channel
+            },
+            "sting": {
+                "configuration": sting_config,
+                "channels": [{"id": i + 1, "name": f"STING Channel {i + 1}"} for i in range(len(sting_channels))]
+            }
+        }
+
+        # Save the dictionary to a JSON file
+        file_path = "channel_configuration.json"
+        with open(file_path, "w") as json_file:
+            json.dump(config_data, json_file, indent=4)
+    
+        # Print a success message and the collected data (optional)
+        print(f"Configuration saved to {file_path}")
+        print(json.dumps(config_data, indent=4))
+    
+        # Close the dialog
+        self.accept()
+
+
+
+if __name__ == "__main__":
+    print("Okay but why you running this by itself tho..\n")
+    app = QApplication(sys.argv)
+    dialog = ChannelDialog()
+    dialog.exec_()

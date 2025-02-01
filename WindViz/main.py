@@ -8,15 +8,19 @@ from src.gui import DAQ970AGui
 from src.data_logger import DataLogger
 from src.calibration import CalibrationManager
 from src.instrument_manager import InstrumentManager
-from src.configure_test import ConfigGeneratorDialog
+from src.configure_test import ChannelDialog
+from src.db import Database
 
 class DAQ970AApp:
     def __init__(self):
-        self.config = ConfigGeneratorDialog()
+        self.db = Database()
+
         self.gui = DAQ970AGui(self)
+        self.config = ChannelDialog(self)        
         self.instrument = InstrumentManager()
         self.calibration = CalibrationManager()
         self.data_logger = DataLogger()
+        
         
         # Connect to instrument
         self.instrument.connect()
