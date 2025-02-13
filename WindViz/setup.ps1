@@ -40,7 +40,7 @@ function Setup-VirtualEnv {
     }
     
     # Activate venv
-    & .\venv\Scripts\Activate.ps1
+    & .\venv\Scripts\Activate.ps1 
     if ($LASTEXITCODE -ne 0) {
         Write-ColoredMessage "Error: Failed to activate virtual environment" "Red"
         exit 1
