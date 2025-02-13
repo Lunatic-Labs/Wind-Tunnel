@@ -1,7 +1,7 @@
 import sys
 import time
 import numpy as np
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 from PyQt5.QtCore import QTimer
 
 from src.gui import DAQ970AGui

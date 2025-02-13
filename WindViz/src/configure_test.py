@@ -2,7 +2,7 @@ import sys, json
 from PyQt5.QtWidgets import (
     QApplication, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, 
     QComboBox, QFormLayout, QGroupBox, QScrollArea, QPushButton, 
-    QSpacerItem, QSizePolicy, QWidget
+    QSpacerItem, QSizePolicy, QWidget, QMessageBox
 )
 
 class ChannelDialog(QDialog):
@@ -122,6 +122,14 @@ class ChannelDialog(QDialog):
             field.deleteLater()
         field_list.clear()
 
+    def show_success(self):
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Success")
+        msg.setText("Configuration successfully loaded!")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+
     def submit(self):
         """Handle the submit action and save data to both JSON and database"""
         try:
@@ -163,15 +171,13 @@ class ChannelDialog(QDialog):
             with open(file_path, "w") as json_file:
                 json.dump(config_data, json_file, indent=4)
         
-            print(f"Configuration saved to {file_path} and database")
-            print(json.dumps(config_data, indent=4))
+            self.show_success()
         
             self.accept()
             
         except ValueError as e:
-            # Handle any validation errors from the database
             print(f"Error saving configuration: {str(e)}")
-            # You might want to show an error dialog to the user here
+            # error dialog?
             
 if __name__ == "__main__":
     print("Okay but why you running this by itself tho..\n")

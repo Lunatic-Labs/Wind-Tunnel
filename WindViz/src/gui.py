@@ -154,7 +154,8 @@ class DAQ970AGui(QMainWindow):
                 except ValueError as e:
                     print(f"Error setting channel data for {channel_type}: {e}")
             
-            print(self.db.get_channel_data("pressure"))
+            # show that db is being populated and how we access data
+            print(f"\n\n{self.db.get_channel_data("pressure")}")
 
             self.show_success()
             
