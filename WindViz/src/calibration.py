@@ -41,3 +41,7 @@ class CalibrationManager:
     def set_configuration(self, config):
         """Change calibration configuration."""
         self.current_calibration = config
+        
+
+if __name__ == "__main__":
+    print("Dont do that\n\n>.>\n\n")

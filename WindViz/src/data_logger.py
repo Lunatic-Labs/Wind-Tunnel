@@ -29,3 +29,7 @@ class DataLogger:
                 writeOut.append(device_timestamps[index])
                 writeOut.append(measurements[index, 0])
             writer.writerow(writeOut)
+            
+
+if __name__ == "__main__":
+    print("Dont do that\n\n>.>\n\n")

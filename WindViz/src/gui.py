@@ -1,16 +1,17 @@
 from PyQt5.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, 
                             QWidget, QPushButton, QComboBox, QTabWidget, 
-                            QFormLayout, QLineEdit, QMessageBox)
+                            QFormLayout, QLineEdit, QMessageBox, QGroupBox,
+                            QScrollArea, QFileDialog)
 from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import numpy as np
 import time
+import json
 
 class DAQ970AGui(QMainWindow):
     def __init__(self, App):
         super().__init__()
-        self.initUI()
         self.app = App
         self.db = App.db
         
@@ -22,52 +23,161 @@ class DAQ970AGui(QMainWindow):
         self.timestamps = []
         self.start_time = None
         
+        self.initUI()
+
     def initUI(self):
         self.setWindowTitle("WindViz")
         self.setGeometry(100, 100, 1000, 800)
 
-        # Create tab widget
-        self.tabs = QTabWidget()
-        self.tabs.addTab(self.create_data_display_tab(), "Data Display")
-        
-        self.setCentralWidget(self.tabs)
+        main_scroll = QScrollArea()
+        self.setCentralWidget(main_scroll)
+        main_scroll.setWidgetResizable(True)
+        main_scroll.setHorizontalScrollBarPolicy(1)
 
-    
+        content_widget = QWidget()
+        content_widget.setMinimumHeight(1200)
+        main_scroll.setWidget(content_widget)
+
+        main_layout = QVBoxLayout(content_widget)
+        main_layout.setSpacing(20)
+
+        control_panel = QHBoxLayout()
+
+        """ Test control group """
+        test_group = QGroupBox("Test Control")
+        test_layout = QVBoxLayout()
+        self.start_button = QPushButton("Start Measuring")
+        self.stop_button = QPushButton("Stop Measuring")
+        test_layout.addWidget(self.start_button)
+        test_layout.addWidget(self.stop_button)
+        test_group.setLayout(test_layout)
+
+        """ Configuration group """
+        config_group = QGroupBox("Configuration")
+        config_layout = QVBoxLayout()
+        self.open_config_button = QPushButton("Configure Test")
+        self.load_config_button = QPushButton("Load Configuration")
+        config_layout.addWidget(self.open_config_button)
+        config_layout.addWidget(self.load_config_button)
+        config_group.setLayout(config_layout)
+
+        """ Add groups """
+        control_panel.addWidget(test_group)
+        control_panel.addWidget(config_group)
+        
+				# add to layout
+        main_layout.addLayout(control_panel)
+
+        """ Data display group """
+        data_group = QGroupBox("Raw Data")
+        data_layout = QVBoxLayout()
+        self.raw_data_label = QLabel("Raw Voltages (V):\nNo data yet")
+        self.calibrated_data_label = QLabel("Calibrated Forces:\nNo data yet")
+        data_layout.addWidget(self.raw_data_label)
+        data_layout.addWidget(self.calibrated_data_label)
+        data_group.setLayout(data_layout)
+        main_layout.addWidget(data_group)
+
+        """ Create graphs """
+        measurement_types = ['Calibrated Forces', 'Raw Voltages', 'Temperature', 'STING']
+        for mtype in measurement_types:
+            container = QHBoxLayout()
+            
+            fig = Figure(figsize=(10, 3))
+            canvas = FigureCanvas(fig)
+            canvas.setMinimumHeight(250)
+            ax = fig.add_subplot(111)
+            
+            if mtype == 'Calibrated Forces':
+                self.figure = fig
+                self.canvas = canvas
+                self.ax = ax
+                self.lines = []
+                labels = ['Normal Force', 'Axial Force', 'Side Force']
+                for label in labels:
+                    line, = ax.plot([], [], label=label)
+                    self.lines.append(line)
+                ax.legend()
+            else:
+                ax.plot([], [])  # empty plot for now
+            
+            ax.set_title(mtype)
+            ax.set_xlabel("Time (s)")
+            ax.set_ylabel("Value")
+            ax.grid(True)
+            fig.tight_layout()
+            
+            # add label and canvas
+            label = QLabel(mtype)
+            label.setFixedWidth(100)
+            container.addWidget(canvas)
+            container.addWidget(label)
+            
+            # add container
+            container_widget = QWidget()
+            container_widget.setLayout(container)
+            container_widget.setMinimumHeight(280)
+            main_layout.addWidget(container_widget)
+
+        self.start_button.clicked.connect(self.start_measuring)
+        self.stop_button.clicked.connect(self.stop_measuring)
+        self.open_config_button.clicked.connect(self.open_config_dialog)
+        self.load_config_button.clicked.connect(self.load_config_from_json)
+
     def open_config_dialog(self):
         dialog = self.app.config
         dialog.exec_()
         
     def load_config_from_json(self):
-        #open json, read data
-        #set db values based on read data
-        return 0
-    
-    def saved_channels(self):
-        """Save the selected channels after validating input."""
+        options = QFileDialog.Options()
+        json_file_path, _ = QFileDialog.getOpenFileName(self, "Select JSON File", "", "JSON Files (*.json);;All Files (*)", options=options)
         try:
-            # Get values from the input fields
-            channel1 = int(self.channel1_input.text())
-            channel2 = int(self.channel2_input.text())
-            channel3 = int(self.channel3_input.text())
+            with open(json_file_path, 'r') as file:
+                config_data = json.load(file)
 
-            # Validate that channels are within the acceptable range and not the same
-            if not (301 <= channel1 <= 320 and 301 <= channel2 <= 320 and 301 <= channel3 <= 320):
-                self.show_error_message("Invalid channels", "Each channel must be between 301 and 320.")
-                return
+            # set db values based on the read data
+            for channel_type, channel_info in config_data.items():
+                if channel_type not in self.db.data["channels"]:
+                    print(f"Skipping invalid channel type: {channel_type}")
+                    continue
 
-            if len({channel1, channel2, channel3}) != 3:
-                self.show_error_message("Duplicate channels", "Channels must be unique.")
-                return
+                # get the 'channels' list from the JSON data
+                channels = channel_info.get('channels', [])
+                config = channel_info.get('configuration', None)
 
-            # If valid, update the selected channels
-            self.selected_channels = [channel1, channel2, channel3]
-            message = f"Selected channels: {self.selected_channels}" 
-            print(message)
-            QMessageBox.information(self, 'Success', message)
+                # get channel names and ids
+                values = [{"id": channel["id"], "name": channel["name"]} for channel in channels]
 
-        except ValueError:
-            self.show_error_message("Invalid input", "Please enter valid channel numbers (301-320).")
+                # set db
+                try:
+                    self.db.set_channel_data(channel_type, values, config)
+                except ValueError as e:
+                    print(f"Error setting channel data for {channel_type}: {e}")
+            
+            print(self.db.get_channel_data("pressure"))
 
+            self.show_success()
+            
+            return 0
+
+        except FileNotFoundError:
+            print(f"Error: The file {json_file_path} was not found.")
+            return 1
+        except json.JSONDecodeError:
+            print(f"Error: Failed to decode the JSON from {json_file_path}.")
+            return 2
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            return 3
+    
+    def show_success(self):
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Success")
+        msg.setText("Configuration successfully loaded!")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec_()
+    
     def start_measuring(self):
         """Start the measurement process."""
         self.measurements = []
@@ -80,53 +190,6 @@ class DAQ970AGui(QMainWindow):
         """Stop the measurement process."""
         self.measurement_timer.stop()
         self.raw_data_label.setText("Measuring stopped.")
-
-    def create_data_display_tab(self):
-        """Create data display tab with plot and controls."""
-        data_tab = QWidget()
-        layout = QVBoxLayout()
-
-        '''Configure test hardware data buttons'''
-        self.open_config_button = QPushButton("Configure Test")
-        layout.addWidget(self.open_config_button)
-        # Event listeners
-        self.open_config_button.clicked.connect(self.open_config_dialog)
-
-
-        # Control buttons
-        self.start_button = QPushButton("Start Measuring")
-        self.stop_button = QPushButton("Stop Measuring")
-        layout.addWidget(self.start_button)
-        layout.addWidget(self.stop_button)
-        self.start_button.clicked.connect(self.start_measuring)
-        self.stop_button.clicked.connect(self.stop_measuring)
-
-        # Data labels
-        self.raw_data_label = QLabel("Raw Voltages (V):\nNo data yet")
-        self.calibrated_data_label = QLabel("Calibrated Forces:\nNo data yet")
-        layout.addWidget(self.raw_data_label)
-        layout.addWidget(self.calibrated_data_label)
-
-        # Plot setup
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
-        self.ax = self.figure.add_subplot(111)
-        self.ax.set_title("Live Calibrated Forces")
-        self.ax.set_xlabel("Time (s)")
-        self.ax.set_ylabel("Force")
-        self.lines = []
-        
-        labels = ['Normal Force', 'Axial Force', 'Side Force']
-        for i in range(3):
-            line, = self.ax.plot([], [], label=labels[i])
-            self.lines.append(line)
-            
-        self.ax.legend()
-        self.ax.grid(True)
-        layout.addWidget(self.canvas)
-
-        data_tab.setLayout(layout)
-        return data_tab
 
     def show_error_message(self, title, message):
         """Display an error message dialog."""
@@ -159,3 +222,7 @@ class DAQ970AGui(QMainWindow):
         self.ax.relim()
         self.ax.autoscale_view()
         self.canvas.draw()
+        
+
+if __name__ == "__main__":
+    print("Dont do that\n\n>.>\n\n")

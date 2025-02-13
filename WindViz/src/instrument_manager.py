@@ -84,3 +84,7 @@ class InstrumentManager:
         if self.connection:
             self.connection.close()
             self.connection = None
+            
+
+if __name__ == "__main__":
+    print("Dont do that\n\n>.>\n\n")
