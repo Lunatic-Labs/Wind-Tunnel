@@ -27,13 +27,13 @@ function Setup-VirtualEnv {
     Write-ColoredMessage "Setting up virtual environment..." "Yellow"
     
     # Remove existing venv if it exists
-    if (Test-Path "WindViz") {
+    if (Test-Path "venv") {
         Write-ColoredMessage "Removing existing virtual environment..." "Yellow"
-        Remove-Item -Recurse -Force "WindViz"
+        Remove-Item -Recurse -Force "venv"
     }
     
     # Create new virtual environment
-    python -m venv WindViz
+    python -m venv venv
     if ($LASTEXITCODE -ne 0) {
         Write-ColoredMessage "Error: Failed to create virtual environment" "Red"
         exit 1
@@ -86,7 +86,7 @@ function Main {
     Write-ColoredMessage "1. Make sure you're in the virtual environment (look for '(WindViz)' in your terminal)" "Yellow"
     Write-ColoredMessage "2. Run 'python main.py' to start the application" "Yellow"
     Write-ColoredMessage "`nIf you close your terminal, reactivate the virtual environment with:" "Yellow"
-    Write-ColoredMessage "    .\WindViz\Scripts\Activate.ps1" "Yellow"
+    Write-ColoredMessage "    .\venv\Scripts\Activate.ps1" "Yellow"
 }
 
 
