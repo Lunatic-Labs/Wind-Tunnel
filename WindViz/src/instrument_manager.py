@@ -12,22 +12,28 @@ class InstrumentManager:
         devices = self.rm.list_resources('USB?*INSTR')
         
         if devices:
-            n = 0
-            while True:
-                try:
-                    self.connection = self.rm.open_resource(devices[n])
-                    self.connection.clear()
-                    self.connection.write('*IDN?')
-                    idn = self.connection.read()
-                    print(f"Connected to: {idn}")
-
-                    self._configure_instrument()
-                    return True
-                except pyvisa.errors.VisaIOError:
-                    n += 1
+          for n in range(0, len(devices)):
+            try:
+              self.connection = self.rm.open_resource(devices[n])
+              self.connection.clear()
+              self.connection.write('*IDN?')
+              idn = self.connection.read()
+              
+              if idn == False:
+                  print(f"Invalid response from device {devices[n]}")
+                  continue  # try next device
+              
+              print(f"Connected to: {idn}")
+              self._configure_instrument()
+              return True
+            
+            except pyvisa.errors.VisaIOError:
+              print(f"Error connecting to device {devices[n]}")
+              continue  # try next device
         else:
-            print("No USB instruments found")
-            return False
+          print("No USB instruments found")
+        return False
+
 
     def _configure_instrument(self):
         """Configure the DAQ970A settings."""

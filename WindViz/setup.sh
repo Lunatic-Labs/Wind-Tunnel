@@ -21,6 +21,5 @@ else
 fi
 
 # Deactivate the virtual environment after installing
-deactivate
 
 echo "Setup complete!"

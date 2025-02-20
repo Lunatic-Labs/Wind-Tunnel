@@ -3,6 +3,7 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 import datetime
+import pyvisa
 
 # Add the src directory to sys.path to import instrument_manager
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src')))
@@ -20,6 +21,8 @@ class TestInstrumentManager(unittest.TestCase):
         self.assertIsNone(self.manager.connection)
         self.assertEqual(self.manager.selected_channels, [301, 302, 303])
         
+        
+  #============================= TEST connect() FUNCTION ===============================================
     @patch('pyvisa.ResourceManager')
     def test_connect_success(self, mock_resource_manager):
         """Test successful connection to an instrument."""
@@ -50,6 +53,99 @@ class TestInstrumentManager(unittest.TestCase):
         mock_device.write.assert_any_call('FORM:READ:TIME:TYPE ABS')
         mock_device.write.assert_any_call('FORM:READ:TIME ON')
         
+    @patch('pyvisa.ResourceManager')
+    def test_connect_fail(self, mock_resource_manager):
+        """ Test if device can't be found"""
+        mock_device = MagicMock()
+        mock_device.read.return_value = False
+        
+        mock_rm = MagicMock()
+        mock_rm.list_resources.return_value = False
+        mock_rm.open_resource.return_value = mock_device
+        mock_resource_manager.return_value = mock_rm
+        
+        manager = InstrumentManager()
+        result = manager.connect()
+        
+        self.assertFalse(result)
+        
+    @patch('pyvisa.ResourceManager')
+    def test_connect_multiple_devices(self, mock_resource_manager):
+        """Test connection when multiple devices are found."""
+        mock_device1 = MagicMock()
+        mock_device1.read.return_value = "DAQ970A,12345,A.01.01"
+    
+        mock_device2 = MagicMock()
+        mock_device2.read.return_value = "DAQ970A,67890,A.01.01"
+    
+        mock_rm = MagicMock()
+        mock_rm.list_resources.return_value = [
+            'USB0::0x2A8D::0x0101::MY12345678::INSTR',
+            'USB0::0x2A8D::0x0101::MY98765432::INSTR'
+        ]
+        mock_rm.open_resource.side_effect = [mock_device1, mock_device2]
+        mock_resource_manager.return_value = mock_rm
+    
+        manager = InstrumentManager()
+        result = manager.connect()
+    
+        self.assertTrue(result)
+        mock_rm.open_resource.assert_called_once_with('USB0::0x2A8D::0x0101::MY12345678::INSTR')
+        
+    @patch('pyvisa.ResourceManager')
+    def test_connect_visa_io_error(self, mock_resource_manager):
+        """Test connection when a VisaIOError occurs."""
+        mock_rm = MagicMock()
+        mock_rm.list_resources.return_value = ['USB0::0x2A8D::0x0101::MY12345678::INSTR']
+        mock_rm.open_resource.side_effect = pyvisa.errors.VisaIOError(-107380733)
+        mock_resource_manager.return_value = mock_rm
+        
+        manager = InstrumentManager()
+        result = manager.connect()
+        
+        self.assertFalse(result)
+        
+    @patch('pyvisa.ResourceManager')
+    def test_connect_invalid_device_response(self, mock_resource_manager):
+        """Test connection when the device returns an invalid response."""
+        # Setup mock device
+        mock_device = MagicMock()
+        mock_device.read.return_value = False  # Simulate an invalid response
+    
+        mock_rm = MagicMock()
+        mock_rm.list_resources.return_value = ['USB0::0x2A8D::0x0101::MY12345678::INSTR']
+        mock_rm.open_resource.return_value = mock_device
+        mock_resource_manager.return_value = mock_rm
+    
+        manager = InstrumentManager()
+    
+        result = manager.connect()
+    
+        self.assertFalse(result)
+    
+        # Ensure the device was queried for identification
+        mock_device.write.assert_called_once_with('*IDN?')
+        mock_device.read.assert_called_once()
+        
+    @patch('pyvisa.ResourceManager')
+    def test_connect_configuration_failure(self, mock_resource_manager):
+        """Test connection when configuration commands fail."""
+        mock_device = MagicMock()
+        mock_device.read.return_value = "DAQ970A,12345,A.01.01"
+        mock_device.write.side_effect = pyvisa.errors.VisaIOError(-107380733)
+        
+        mock_rm = MagicMock()
+        mock_rm.list_resources.return_value = ['USB0::0x2A8D::0x0101::MY12345678::INSTR']
+        mock_rm.open_resource.return_value = mock_device
+        mock_resource_manager.return_value = mock_rm
+        
+        manager = InstrumentManager()
+        result = manager.connect()
+        
+        self.assertFalse(result)
+  
+    #============================= END TEST connect() FUNCTION ===============================================
+
     def test_set_channels(self):
         """Test setting new channels."""
         # Create mock connection
