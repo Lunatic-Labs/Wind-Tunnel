@@ -3,3 +3,5 @@ matplotlib
 pyvisa
 pyvisa-py
 psutil
+pytest
+pytest-cov

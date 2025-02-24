@@ -19,9 +19,9 @@ class InstrumentManager:
               self.connection.write('*IDN?')
               idn = self.connection.read()
               
-              if idn == False:
-                  print(f"Invalid response from device {devices[n]}")
-                  continue  # try next device
+              if "DAQ970A" not in idn:
+               print(f"Invalid response from device {devices[n]}")
+               continue  # try next device
               
               print(f"Connected to: {idn}")
               self._configure_instrument()
@@ -93,4 +93,4 @@ class InstrumentManager:
             
 
 if __name__ == "__main__":
-    print("Dont do that\n\n>.>\n\n")
+    print("Why'd you do that..\n\n")
