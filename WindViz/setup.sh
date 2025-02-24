@@ -20,6 +20,5 @@ else
   echo "requirements.txt not found!"
 fi
 
-# Deactivate the virtual environment after installing
+echo "Setup complete! To keep the virtual environment active, use: source venv/bin/activate"
 
-echo "Setup complete!"
