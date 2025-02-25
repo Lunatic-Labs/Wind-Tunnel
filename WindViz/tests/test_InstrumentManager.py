@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 import pyvisa
 import datetime
 
-from instrument_manager import InstrumentManager
-import src.instrument_manager as im
+from src.instrument_manager import InstrumentManager
+
 
 def test_init(instrument_manager):
     """
