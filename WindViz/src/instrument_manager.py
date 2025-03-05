@@ -18,7 +18,7 @@ class InstrumentManager:
               self.connection.clear()
               self.connection.write('*IDN?')
               idn = self.connection.read()
-              
+               
               if "DAQ970A" not in idn:
                print(f"Invalid response from device {devices[n]}")
                continue  # try next device
