@@ -14,12 +14,15 @@ from src.db import Database
 class DAQ970AApp:
     def __init__(self):
         self.db = Database()
-        self.instrument = InstrumentManager()
+
         self.gui = DAQ970AGui(self)
-        self.config = ChannelDialog(self)         
+        self.config = ChannelDialog(self)        
+        self.instrument = InstrumentManager()
         self.calibration = CalibrationManager()
         self.data_logger = DataLogger()
         
+        
+        # Connect to instrument
         self.instrument.connect()
 
     def measure_task(self):
@@ -28,34 +31,25 @@ class DAQ970AApp:
         if not raw_data:
             return
 
-        measurements, device_timestamps = raw_data
-        pressure_vals, velocity_vals, temp_vals, sting_vals = measurements
+        current_measurement = np.array(raw_data[0]).reshape((3, 1))
+        device_timestamps = raw_data[1]
         elapsed_time = time.time() - self.gui.start_time
-
-        # Store raw measurements
-        self.gui.pressure_data.append(pressure_vals)
-        self.gui.velocity_data.append(velocity_vals)
-        self.gui.temp_data.append(temp_vals)
         
-        # Calibrate STING data if exactly 3 channels
-        if len(sting_vals) == 3:
-            sting_config = self.db.get_channel_data("sting").get("configuration", "Side")
-            self.calibration.set_configuration(sting_config)
-            sting_array = np.array(sting_vals).reshape(3, 1)
-            calibrated_sting = self.calibration.calibrate_forces(sting_array).flatten()
-            self.gui.sting_data.append(calibrated_sting)
-        else:
-            self.gui.sting_data.append(sting_vals)  # Raw if not 3 channels
-        
+        # Store and log data
+        self.gui.measurements.append(current_measurement)
         self.gui.timestamps.append(elapsed_time)
-
-        # Log all measurements (raw data)
-        self.data_logger.log_measurement(device_timestamps, measurements)
-
-        # Update GUI with raw data for all except STING, which may be calibrated
-        self.gui.update_display(measurements, [elapsed_time])
+        self.data_logger.log_measurement(device_timestamps, current_measurement)
+        
+        # Calculate calibrated forces
+        calibrated_force = self.calibration.calibrate_forces(current_measurement)
+        self.gui.calibrated_forces.append(calibrated_force)
+        
+        # Update GUI
+        self.gui.update_display(raw_data[0], calibrated_force)
+        self.gui.update_plot(self.gui.timestamps, self.gui.calibrated_forces)
 
     def run(self):
+        """Start the application."""
         self.gui.show()
 
 def main():
