@@ -9,6 +9,7 @@ class ChannelDialog(QDialog):
     def __init__(self, App):
         super().__init__()
         self.db = App.db  # Store database reference
+        self.im = App.instrument
 
         self.setWindowTitle("Channel Configuration")
         self.setGeometry(100, 100, 500, 500)
@@ -126,9 +127,11 @@ class ChannelDialog(QDialog):
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Success")
-        msg.setText("Configuration successfully loaded!")
+        msg.setText("Configuration successfully saved!")
         msg.setStandardButtons(QMessageBox.Ok)
         msg.exec_()
+
+
 
     def submit(self):
         """Handle the submit action and save data to both JSON and database"""
@@ -139,40 +142,40 @@ class ChannelDialog(QDialog):
             temperature_value = [field.text() for field in self.temperature_input_fields]
             sting_values = [field.text() for field in self.sting_input_fields]
             sting_config = self.sting_config_combo.currentText()
-
+    
             # Save to database using set_channel_data
             self.db.set_channel_data("pressure", pressure_values)
             self.db.set_channel_data("velocity", velocity_values)
             self.db.set_channel_data("temperature", temperature_value)
             self.db.set_channel_data("sting", sting_values, config=sting_config)
-
-            # Create JSON format (keeping this for compatibility)
+    
+            # Create JSON format matching the database structure
             config_data = {
-                "velocity": {
-                    "channels": [{"id": i + 1, "name": channel or f"Velocity Channel {i + 1}"} 
-                               for i, channel in enumerate(velocity_values)]
-                },
-                "pressure": {
-                    "channels": [{"id": i + 1, "name": channel or f"Pressure Channel {i + 1}"} 
-                               for i, channel in enumerate(pressure_values)]
-                },
-                "temperature": {
-                    "channels": [{"id": 1, "name": temperature_value[0] if temperature_value else "Temperature Channel 1"}]
-                },
-                "sting": {
-                    "configuration": sting_config,
-                    "channels": [{"id": i + 1, "name": channel or f"STING Channel {i + 1}"} 
-                               for i, channel in enumerate(sting_values)]
+                "channels": {
+                    "pressure": {
+                        "values": pressure_values
+                    },
+                    "velocity": {
+                        "values": velocity_values
+                    },
+                    "temperature": {
+                        "values": temperature_value
+                    },
+                    "sting": {
+                        "values": sting_values,
+                        "configuration": sting_config
+                    }
                 }
             }
-
+    
             # Save to JSON file
             file_path = "channel_configuration.json"
             with open(file_path, "w") as json_file:
                 json.dump(config_data, json_file, indent=4)
-        
+            
+            self.im.set_channels(pressure_values, velocity_values, temperature_value, sting_values)
             self.show_success()
-        
+            
             self.accept()
             
         except ValueError as e:
