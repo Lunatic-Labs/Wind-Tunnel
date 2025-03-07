@@ -76,18 +76,39 @@ class DAQReaderApp(QtWidgets.QMainWindow):
 
         self.config = ConfigManager()
         self.daq = DAQInterface()
+        self.measuring = False  # Track measuring state
         
         self.setup_ui()
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_plots)
-        self.timer.start(100)
+        # Timer starts stopped; activated by "Start Measuring"
 
     def setup_ui(self):
+        # Central widget with layout
         central_widget = QtWidgets.QWidget()
         self.setCentralWidget(central_widget)
-        layout = QtWidgets.QGridLayout(central_widget)
+        main_layout = QtWidgets.QVBoxLayout(central_widget)  # Main vertical layout
 
+        # Control panel for buttons
+        control_panel = QtWidgets.QHBoxLayout()
+        self.start_button = QtWidgets.QPushButton("Start Measuring")
+        self.start_button.clicked.connect(self.start_measuring)
+        control_panel.addWidget(self.start_button)
+
+        self.stop_button = QtWidgets.QPushButton("Stop Measuring")
+        self.stop_button.clicked.connect(self.stop_measuring)
+        self.stop_button.setEnabled(False)  # Disabled until started
+        control_panel.addWidget(self.stop_button)
+
+        main_layout.addLayout(control_panel)
+
+        # Plot area
+        self.plot_container = QtWidgets.QWidget()
+        self.plot_layout = QtWidgets.QGridLayout(self.plot_container)
+        main_layout.addWidget(self.plot_container)
+
+        # Menu bar
         menubar = self.menuBar()
         file_menu = menubar.addMenu('File')
         load_action = QtWidgets.QAction('Load Config', self)
@@ -100,7 +121,24 @@ class DAQReaderApp(QtWidgets.QMainWindow):
         
         for g_type, pos in zip(graph_types, positions):
             self.plot_widgets[g_type] = None
-            layout.addWidget(QtWidgets.QLabel(f"{g_type} (No Config)"), *pos)
+            self.plot_layout.addWidget(QtWidgets.QLabel(f"{g_type} (No Config)"), *pos)
+
+    def start_measuring(self):
+        if not self.config.channels:
+            QtWidgets.QMessageBox.warning(self, "No Config", "Please load a configuration file first.")
+            return
+        self.measuring = True
+        self.timer.start(100)  # Start timer at 100ms interval
+        self.start_button.setEnabled(False)
+        self.stop_button.setEnabled(True)
+        print("Started measuring")
+
+    def stop_measuring(self):
+        self.measuring = False
+        self.timer.stop()  # Stop the timer
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        print("Stopped measuring")
 
     def load_config(self):
         file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Config", "", "JSON Files (*.json)")
@@ -109,22 +147,21 @@ class DAQReaderApp(QtWidgets.QMainWindow):
             self.update_plot_layout()
 
     def update_plot_layout(self):
-        layout = self.centralWidget().layout()
-        for i in reversed(range(layout.count())):
-            layout.itemAt(i).widget().setParent(None)
+        for i in reversed(range(self.plot_layout.count())):
+            self.plot_layout.itemAt(i).widget().setParent(None)
 
         positions = [(0, 0), (0, 1), (1, 0), (1, 1)]
         for i, (g_type, channel_ids) in enumerate(self.config.graphs.items()):
             channels_to_plot = {ch: self.config.channels[ch] for ch in channel_ids}
             self.plot_widgets[g_type] = PlotWidget(g_type, channels_to_plot)
             print(f"Adding {g_type} at {positions[i]}")
-            layout.addWidget(self.plot_widgets[g_type], *positions[i])
+            self.plot_layout.addWidget(self.plot_widgets[g_type], *positions[i])
             self.plot_widgets[g_type].show()
-        self.centralWidget().update()
-        self.centralWidget().show()
+        self.plot_container.update()
+        self.plot_container.show()
 
     def update_plots(self):
-        if not self.config.channels:
+        if not self.measuring or not self.config.channels:
             return
         data = self.daq.read_channels(self.config.channels.keys())
         for g_type, widget in self.plot_widgets.items():
