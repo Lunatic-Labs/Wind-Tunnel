@@ -1,0 +1,15 @@
+{
+  "channels": {
+    "101": {"type": "Pressure", "unit": "Pa", "name": "Pressure_1"},
+    "102": {"type": "Pressure", "unit": "Pa", "name": "Pressure_2"},
+    "103": {"type": "Temperature", "unit": "C", "name": "Temp_1"},
+    "104": {"type": "Velocity", "unit": "m/s", "name": "Vel_1"},
+    "105": {"type": "STING", "unit": "V", "name": "Sting_1"}
+  },
+  "graphs": {
+    "Pressure": ["101", "102"],
+    "Temperature": ["103"],
+    "Velocity": ["104"],
+    "STING": ["105"]
+  }
+}
