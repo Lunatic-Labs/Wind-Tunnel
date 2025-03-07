@@ -1,0 +1,15 @@
+{
+  "channels": {
+    "301": {"type": "Pressure", "unit": "Pa", "name": "Pressure_1"},
+    "302": {"type": "Pressure", "unit": "Pa", "name": "Pressure_2"},
+    "303": {"type": "Temperature", "unit": "C", "name": "Temp_1"},
+    "304": {"type": "Velocity", "unit": "m/s", "name": "Vel_1"},
+    "305": {"type": "STING", "unit": "V", "name": "Sting_1"}
+  },
+  "graphs": {
+    "Pressure": ["301", "302"],
+    "Temperature": ["303"],
+    "Velocity": ["304"],
+    "STING": ["305"]
+  }
+}
