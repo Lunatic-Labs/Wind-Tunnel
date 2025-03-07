@@ -3,7 +3,7 @@ import time
 from pathlib import Path
 
 class DataLogger:
-    def __init__(self, log_dir="../logs", filename_prefix="daq_data"):
+    def __init__(self, log_dir="/logs", filename_prefix="daq_data"):
         # Ensure log directory exists relative to TEST/
         self.log_dir = Path(log_dir)
         self.log_dir.mkdir(exist_ok=True)
