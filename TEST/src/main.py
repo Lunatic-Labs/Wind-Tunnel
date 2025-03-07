@@ -1,10 +1,11 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
-from .config_manager import ConfigManager  # Relative import
-from .daq_interface import DAQInterface   # Relative import
+from .config_manager import ConfigManager
+from .daq_interface import DAQInterface
 import pyqtgraph as pg
 import time
-from .plot_widget import PlotWidget       # Relative import
+from .plot_widget import PlotWidget
+from .data_logger import DataLogger  # Import the new logger
 
 class DAQReaderApp(QtWidgets.QMainWindow):
     def __init__(self):
@@ -14,6 +15,7 @@ class DAQReaderApp(QtWidgets.QMainWindow):
 
         self.config = ConfigManager()
         self.daq = DAQInterface()
+        self.logger = DataLogger(log_dir="../logs")  # Logs in TEST/logs/
         self.measuring = False
         
         self.setup_ui()
@@ -61,6 +63,7 @@ class DAQReaderApp(QtWidgets.QMainWindow):
             QtWidgets.QMessageBox.warning(self, "No Config", "Please load a configuration file first.")
             return
         self.measuring = True
+        self.logger.start_logging(self.config.channels.keys())  # Start logging with channel IDs
         self.timer.start(100)
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
@@ -69,12 +72,13 @@ class DAQReaderApp(QtWidgets.QMainWindow):
     def stop_measuring(self):
         self.measuring = False
         self.timer.stop()
+        self.logger.stop_logging()  # Stop logging
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)
         print("Stopped measuring")
 
     def load_config(self):
-        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Config", "", "JSON Files (*.json)")
+        file_name, _ = QtWidgets.QFileDialog.getOpenFileName(self, "Open Config", "../", "JSON Files (*.json)")
         if file_name:
             self.config.load_config(file_name)
             self.update_plot_layout()
@@ -97,9 +101,11 @@ class DAQReaderApp(QtWidgets.QMainWindow):
         if not self.measuring or not self.config.channels:
             return
         data = self.daq.read_channels(self.config.channels.keys())
-        for g_type, widget in self.plot_widgets.items():
-            if widget:
-                widget.update_plot(data)
+        if data is not None:  # Only log and update if data is valid
+            self.logger.log_data(data)  # Log the data
+            for g_type, widget in self.plot_widgets.items():
+                if widget:
+                    widget.update_plot(data)
         self.centralWidget().repaint()
         self.repaint()
 
