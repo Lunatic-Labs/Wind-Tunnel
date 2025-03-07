@@ -91,7 +91,7 @@ class DAQReaderApp(QtWidgets.QMainWindow):
         for i, (g_type, channel_ids) in enumerate(self.config.graphs.items()):
             channels_to_plot = {ch: self.config.channels[ch] for ch in channel_ids}
             self.plot_widgets[g_type] = PlotWidget(g_type, channels_to_plot)
-            print(f"Adding {g_type} at {positions[i]}")
+           # print(f"Adding {g_type} at {positions[i]}")
             self.plot_layout.addWidget(self.plot_widgets[g_type], *positions[i])
             self.plot_widgets[g_type].show()
         self.plot_container.update()

@@ -56,7 +56,7 @@ class PlotWidget(QtWidgets.QWidget):
         
         for ch_id in self.channel_ids:
             self.curves[ch_id].setData(self.times, self.data[ch_id])
-            print(f"Updating {ch_id}: time={self.times[-5:]}, y={self.data[ch_id][-5:]}")
+           # print(f"Updating {ch_id}: time={self.times[-5:]}, y={self.data[ch_id][-5:]}")
         
         if self.times:
             latest_time = self.times[-1]
