@@ -4,3 +4,5 @@ numpy
 pyserial
 pyvisa
 pyvisa-py
+pytest
+pytest-cov
