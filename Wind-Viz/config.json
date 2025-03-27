@@ -1,15 +1,17 @@
 {
   "channels": {
-    "301": {"type": "Pressure", "unit": "Pa", "name": "Pressure_1"},
-    "302": {"type": "Pressure", "unit": "Pa", "name": "Pressure_2"},
-    "303": {"type": "Temperature", "unit": "C", "name": "Temp_1"},
-    "304": {"type": "Velocity", "unit": "m/s", "name": "Vel_1"},
-    "305": {"type": "STING", "unit": "V", "name": "Sting_1"}
+    "301": {"type": "Pressure", "unit": "Pa", "name": "Pressure_1", "coefficient": "2", "offset": "3"},
+    "302": {"type": "Pressure", "unit": "Pa", "name": "Pressure_2", "coefficient": "4", "offset": "2"},
+    "303": {"type": "Temperature", "unit": "C", "name": "Temp_1", "coefficient": "5", "offset": "6"},
+    "304": {"type": "Velocity", "unit": "m/s", "name": "Vel_1", "coefficient": "2", "offset": "3"},
+    "305": {"type": "STING", "unit": "V", "name": "Sting_1", "coefficient": "2", "offset": "9"},
+	"306": {"type": "STING", "unit": "V", "name": "Sting_1", "coefficient": "2", "offset": "9"},
+	"307": {"type": "STING", "unit": "V", "name": "Sting_1", "coefficient": "2", "offset": "9"}
   },
   "graphs": {
     "Pressure": ["301", "302"],
     "Temperature": ["303"],
     "Velocity": ["304"],
-    "STING": ["305"]
+    "STING": ["305", "306", "307"]
   }
 }

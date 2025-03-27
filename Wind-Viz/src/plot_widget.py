@@ -28,6 +28,7 @@ class PlotWidget(QtWidgets.QWidget):
         self.plot_widget.addLegend()
         self.curves = {}
         for i, (ch_id, ch_info) in enumerate(channels.items()):
+            print(ch_info)
             color = self.colors[i % len(self.colors)]
             self.curves[ch_id] = self.plot_widget.plot(pen=pg.mkPen(color, width=2), 
                                                        name=ch_info['name'])
@@ -46,18 +47,30 @@ class PlotWidget(QtWidgets.QWidget):
         current_time = time.time() - self.start_time
         
         self.times.append(current_time)
-        for ch_id in self.channel_ids:
-            self.data[ch_id].append(new_data[ch_id])
         
+        # Apply coefficient and offset (y = mx + b) to each channel's data
+        for ch_id in self.channel_ids:
+            # Get raw value from DAQ
+            raw_value = new_data[ch_id]
+            # Get coefficient and offset from channel config, converting to float
+            m = float(self.channels[ch_id]['coefficient'])
+            b = float(self.channels[ch_id]['offset'])
+            # Apply transformation: y = mx + b
+            transformed_value = (m * raw_value) + b
+            # Store the transformed value
+            self.data[ch_id].append(transformed_value)
+        
+        # Trim data if exceeding max_points
         if len(self.times) > self.max_points:
             self.times.pop(0)
             for ch_id in self.channel_ids:
                 self.data[ch_id].pop(0)
         
+        # Update plot curves with transformed data
         for ch_id in self.channel_ids:
             self.curves[ch_id].setData(self.times, self.data[ch_id])
-           # print(f"Updating {ch_id}: time={self.times[-5:]}, y={self.data[ch_id][-5:]}")
         
+        # Adjust X range
         if self.times:
             latest_time = self.times[-1]
             self.plot_widget.setXRange(max(0, latest_time - (self.max_points * self.update_interval)), 
