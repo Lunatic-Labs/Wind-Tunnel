@@ -91,6 +91,16 @@ Configure the following settings to enable USB connectivity:
 5. Select USB settings
 6. Verify USB SCPI is enabled
 
+## Rustdesk
+
+Rustdesk is a remote desktop application that is used for non-local development. This allows for a remote connection to a computer that is connected to the DAQ970A. Due to latency, it is recommended to develop on your own machine and use the remote connected machine to test any new code.
+
+### Access the Rustdesk connection
+1. Install Rustdesk
+2. In "Control Remote Desktop" section, insert "254 214 958" for the ID.
+3. Insert "WindTunnel2025" for the password.
+4. Click connect
+
 ## Responsible Parties
 
 - Sam Wright - [samuel.wright@lipscomb.edu](mailto:samuel.wright@lipscomb.edu)
